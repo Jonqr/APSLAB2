@@ -6,9 +6,14 @@
 package Principal;
 
 import Model.Aviao;
+import Model.CadVoo;
 import Model.Cliente;
+import Model.Venda;
 import Repositorio.RepositorioCliente;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 import util.Console;
 import util.DateTimeUtil;
@@ -33,7 +38,11 @@ public class PassagemAerea {
                 System.out.println("1- Adicionar Cliente");
                 System.out.println("2- Adicionar Avião");
                 System.out.println("3- Listar Clientes");
-                System.out.println("4- Listar Aviões");                
+                System.out.println("4- Listar Aviões");  
+                System.out.println("5- Cadastrar Voo");
+                System.out.println("6- Listar Vôos Cadastrados");
+                System.out.println("7- Criar Venda");
+                System.out.println("8- Relatorio de Venda");
                 System.out.println("0- Sair");
                 opcao = Console.scanInt("Digite a opcao: ");
 
@@ -50,6 +59,13 @@ public class PassagemAerea {
                     case 4: 
                         listarAvioes();
                         break;
+                    case 5:
+                        cadastrarVoo();
+                    case 6:
+                        ListarCadastrovoo();
+                        break;
+                    case 7: 
+                        Venda();
                     case 0:
                         System.out.println("Saindo do Sistema...");
                         break;
@@ -62,6 +78,24 @@ public class PassagemAerea {
         } while (opcao != 0);
         
         
+    }
+    
+    private static void Venda(){
+        
+        System.out.println("\n Criando Venda ....");
+            
+            System.out.println("SELECIONE O CLIENTE: ");
+            listarClientes();
+            String rg = Console.scanString("RG: ");
+            Cliente cliente = RepositorioCliente.getInstance().buscarCliente(rg);
+            System.out.println("SELECIONE O VOO");
+            ListarCadastrovoo();
+            String cod = Console.scanString("SELECIONE AVIAO: ");
+            CadVoo cad = Repositorio.RepositorioCadVoo.getInstance().buscarCadVoo(cod);
+            String codVenda = Console.scanString("Insira um codigo para venda: ");
+            Venda venda = new Venda();
+            venda.registraVenda(cliente, cad, codVenda);
+            Repositorio.RepositorioVenda.getInstance().add(venda);
     }
     
     
@@ -122,11 +156,51 @@ public class PassagemAerea {
             System.out.print(String.format("%-10s",v.getCódigo()));
             System.out.print(String.format("%-20s",v.getNome()));
             System.out.println(String.format("%-10s",v.getQtdAssentos()));
-            
-        
+       
         }  
+   
+    }
+ 
+    private static void ListarCadastrovoo(){
+        System.out.print(String.format("%-10s","|AVIAO"));
+        System.out.print(String.format("%-20s","|HORARIO"));
+        System.out.println(String.format("%-10s","|ORIGEM"));
+        System.out.println(String.format("%-10s","|DESTINO"));
+    
+        for(CadVoo c: Repositorio.RepositorioCadVoo.getInstance().getCadVoo()){
+            System.out.println(String.format("%-10s", c.getAviao()));
+            System.out.print(String.format("%-20s",c.getHorarioVoo()));        
+            System.out.println(String.format("%-10s",c.getOrigem()));
+            System.out.println(String.format("%-10s",c.getDestino()));
+            
+        }
     
     
+    }
+
+    private static void cadastrarVoo() {
+        System.out.println("... adicionando cadastro de voo");
+        System.out.println("Selecione Avião: ");
+        
+        listarAvioes();
+        String cod = Console.scanString("CODIGO VOO: ");
+        String destino = Console.scanString("DESTINO: ");
+        String origem = Console.scanString("ORIGEM: ");
+        String horarioVoo = Console.scanString("HORARIO VOO: ");        
+        
+        
+       
+       try{
+       LocalDateTime HORA = DateTimeUtil.stringToDateTime(horarioVoo);
+        
+        CadVoo cadvoo = new CadVoo(Repositorio.RepositorioAviao.getInstance().aviaoExiste(cod), destino, origem,HORA );
+        
+        Repositorio.RepositorioCadVoo.getInstance().add(cadvoo);
+       
+       } catch(Exception e){
+            System.out.println("HORARIO DE VOO INVALIDO!");
+        }
+       System.out.println("Cadastro de Vôo realizado com sucesso! ");
     }
     
     

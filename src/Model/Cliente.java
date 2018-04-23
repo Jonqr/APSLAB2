@@ -5,6 +5,8 @@
  */
 package Model;
 
+import java.util.Objects;
+
 /**
  *
  * @author jonh_
@@ -42,7 +44,30 @@ public class Cliente {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Cliente other = (Cliente) obj;
+        if (!Objects.equals(this.RG, other.RG)) {
+            return false;
+        }
+        return true;
+    }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 59 * hash + Objects.hashCode(this.RG);
+        return hash;
+    }
+    
+    
     @Override
     public String toString() {
         return "Cliente{" + "RG=" + RG + ", nome=" + nome + ", telefone=" + telefone + '}';
